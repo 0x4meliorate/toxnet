@@ -18,7 +18,8 @@ How to use
 * sudo apt install libtoxcore
 * go get github.com/TokTok/go-toxcore-c
 * go run server.go - C2
-* You will then see the C2
-![Address](https://i.imgur.com/M4rURRO.png)
+* You will then see the C2 address at the top
 * Edit client.go and input the address in client.go
 * go run client.go - Bot
+![Address](https://i.imgur.com/M4rURRO.png)
+
