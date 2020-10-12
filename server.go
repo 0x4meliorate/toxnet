@@ -46,9 +46,7 @@ var colorGrey = "\033[31m"
 
 // ListBots (Return text bool, id return type)
 func ListBots(t *tox.Tox, id string) []uint32 {
-
-	// Send id string "none" as a default for not printing
-
+	
 	fv := t.SelfGetFriendList()
 	if id != "none" {
 		if id == "all" {
