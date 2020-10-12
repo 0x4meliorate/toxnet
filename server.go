@@ -317,7 +317,7 @@ func main() {
 				online = append(online, foundBot)
 			}
 		} else {
-			fmt.Print("Output:\n\n", message, string(colorReset), "\n\n->")
+			fmt.Print("Output:\n\n", message, string(colorGreen), "\n\n-> ", string(colorRed))
 		}
 
 	}, nil)
