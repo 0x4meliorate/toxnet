@@ -20,6 +20,5 @@ How to use
 * go run server.go - C2
 * You will then see the C2 address at the top
 * Edit client.go and input the address in client.go
+![Address](https://i.imgur.com/M4rURRO.png =500x500)
 * go run client.go - Bot
-![Address](https://i.imgur.com/M4rURRO.png)
-
