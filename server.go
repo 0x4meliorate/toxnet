@@ -22,7 +22,7 @@ var server = []interface{}{
 	"205.185.116.116", uint16(33445), "A179B09749AC826FF01F37A9613F6B57118AE014D4196A0E1105A98F93A54702",
 }
 
-var fname = "./tox.data"
+var fname = "./server.data"
 var debug = false
 var nickPrefix = "Odin"
 var statusText = "Revered immortal."
