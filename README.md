@@ -1,6 +1,7 @@
 # Toxnet
 
 Tox botnet that uses the golang bindings for libtoxcore.  
+This project is still in alpha and is still a little buggy.  
 https://github.com/TokTok/go-toxcore-c
 
 ![ToxNet](https://i.imgur.com/eoDjqMb.png?raw=true)
