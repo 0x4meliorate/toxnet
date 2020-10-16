@@ -43,7 +43,7 @@ var colorWhite = "\033[37m"
 var colorBlack = "\033[30m"
 var colorGrey = "\033[31m"
 
-// ListBots (Return text bool, id return type)
+// ListBots - Print type of bots and return array of bots.
 func ListBots(t *tox.Tox, print string) []uint32 {
 
 	// Pull bots
