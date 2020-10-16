@@ -43,7 +43,7 @@ var colorWhite = "\033[37m"
 var colorBlack = "\033[30m"
 var colorGrey = "\033[31m"
 
-// ListBots - Print type of bots and return array of bots.
+// ListBots - Print all or online bots and return bots.
 func ListBots(t *tox.Tox, print string) []uint32 {
 
 	// Pull bots
@@ -264,6 +264,8 @@ func main() {
 								if err != nil {
 									fmt.Println("Bot offline...")
 								}
+							} else {
+								fmt.Println("Bot doesn't exist...")
 							}
 						} else {
 							// Mass execute command
