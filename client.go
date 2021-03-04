@@ -90,7 +90,14 @@ func main() {
 		}
 	}
 
+	r, err := t.Bootstrap(server[0].(string), server[1].(uint16), server[2].(string))
+	r2, err := t.AddTcpRelay(server[0].(string), server[1].(uint16), server[2].(string))
+	if err != nil {
+		log.Println("bootstrap:", r, err, r2)
+	}
+
 	toxid := t.SelfGetAddress()
+	
 	fmt.Println("Bot ToxID: ", toxid)
 
 	defaultName := t.SelfGetName()
