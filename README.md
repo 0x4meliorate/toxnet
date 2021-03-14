@@ -22,12 +22,12 @@ __Warning: Only use this software according to your current legislation. Misuse 
 
 How to use
 ==========
-* sudo apt install libtoxcore
+* sudo apt install libtoxcore-dev
 * go get github.com/TokTok/go-toxcore-c
 * go run server.go
 * You will then see the C2 address at the top
-* Edit client.go and input the address in client.go
-* go run client.go
+* Edit client.c and input the address in client.c
+* gcc -o client client.c -std=gnu99 -lsodium -I /usr/local/include/ -ltoxcore
 <img src="https://i.imgur.com/M4rURRO.png" alt="address" width="1000" height="auto">
   
  
