@@ -1,6 +1,5 @@
 # Toxnet
 
-Tox botnet:
 C2 is written in Go and uses the golang bindings for libtoxcore.  
 Client is written in C and uses libtoxcore-c.
 
