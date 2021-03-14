@@ -11,7 +11,7 @@ This project was created in two days and it was my first time using Golang.
 However, thanks to [xbee](https://github.com/xbee) and the developers of [TokTok](https://github.com/TokTok) this project was very simple to create.  
 The Toxnet code has been commented and is pretty easy to understand.  
 The way Toxnet works is by having a server that auto accepts incoming clients friend requests.  
-The client sends outgoing messages every 30 seconds to the server tox address, which allows the server to know which clients are currently online/active.  
+The client will send outgoing messages every 30 seconds to the server tox address, which allows the server to know which clients are currently online/active.  
 Then each online machine is appended to an array, which is then called when you use the list online clients command.  
 In order to get started just type help in the server console.  
 You can find Tox bootstrap servers here: [nodes](https://nodes.tox.chat).  
