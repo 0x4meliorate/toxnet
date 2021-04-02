@@ -1,9 +1,7 @@
 # Toxnet
 
-C2 is written in Go and uses the golang bindings for libtoxcore.  
-Client is written in C and uses libtoxcore-c.
-
-https://github.com/TokTok/go-toxcore-c
+C2 is written in Go and uses [go-toxcore-c](https://github.com/TokTok/go-toxcore-c).  
+Client is written in C and uses [c-toxcore](https://github.com/TokTok/c-toxcore).
 
 ![ToxNet](https://i.imgur.com/eoDjqMb.png?raw=true)
 
