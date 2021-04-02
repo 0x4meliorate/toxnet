@@ -32,6 +32,6 @@ How to use
 * `gcc -o client client.c -I tox/include -I deps/file2str -lpthread -Bstatic /usr/lib/x86_64-linux-gnu/libtoxcore.a /usr/lib/x86_64-linux-gnu/libsodium.a -lrt -Bdynamic -lc -lm -lgcc -ldl -pthread`
 
 ### Windows
-* `Coming Soon`
+* Coming Soon
 
 <img src="https://i.imgur.com/M4rURRO.png" alt="address" width="1000" height="auto">
