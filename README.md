@@ -24,7 +24,7 @@ How to use
 
 ### Debian
 
-* `sudo apt install libsodium-dev libtoxcore-dev golang -y``
+* `sudo apt install libsodium-dev libtoxcore-dev golang -y`
 * `go get github.com/TokTok/go-toxcore-c`
 * `go run server.go`
 * You will then see the C2 address and public key at the top
