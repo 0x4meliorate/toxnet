@@ -27,8 +27,8 @@ How to use
 * `sudo apt install libsodium-dev libtoxcore-dev golang -y`
 * `go get github.com/TokTok/go-toxcore-c`
 * `go run server.go`
-* You will then see the C2 address and public key at the top
-* Edit client.c and input the address and public key in client.c
+* You will then see the C2 address and public key under the Toxnet banner
+* Edit client.c and put the tox address and public key in client.c
 * `gcc -o client client.c -I tox/include -I deps/file2str -lpthread -Bstatic /usr/lib/x86_64-linux-gnu/libtoxcore.a /usr/lib/x86_64-linux-gnu/libsodium.a -lrt -Bdynamic -lc -lm -lgcc -ldl -pthread`
 
 ### Windows
