@@ -21,13 +21,17 @@ __Warning: Only use this software according to your current legislation. Misuse 
 
 How to use
 ==========
-* sudo apt install libsodium-dev libtoxcore-dev -y
-* go get github.com/TokTok/go-toxcore-c
-* go run server.go
+
+### Debian
+
+* `sudo apt install libsodium-dev libtoxcore-dev golang -y``
+* `go get github.com/TokTok/go-toxcore-c`
+* `go run server.go`
 * You will then see the C2 address and public key at the top
 * Edit client.c and input the address and public key in client.c
-* gcc -o client client.c -I tox/include -I deps/file2str -lpthread -Bstatic /usr/lib/x86_64-linux-gnu/libtoxcore.a /usr/lib/x86_64-linux-gnu/libsodium.a -lrt -Bdynamic -lc -lm -lgcc -ldl -pthread
-  
+* `gcc -o client client.c -I tox/include -I deps/file2str -lpthread -Bstatic /usr/lib/x86_64-linux-gnu/libtoxcore.a /usr/lib/x86_64-linux-gnu/libsodium.a -lrt -Bdynamic -lc -lm -lgcc -ldl -pthread`
+
+### Windows
+* `Coming Soon`
+
 <img src="https://i.imgur.com/M4rURRO.png" alt="address" width="1000" height="auto">
-  
- 
