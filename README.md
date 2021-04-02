@@ -34,4 +34,4 @@ How to use
 ### Windows
 * Coming Soon
 
-<img src="https://i.imgur.com/M4rURRO.png" alt="address" width="1000" height="auto">
+<img src="https://imgur.com/HFthlr9.png" alt="address" width="1000" height="auto">
