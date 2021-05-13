@@ -99,10 +99,10 @@ int main() {
     Tox *tox = tox_new(NULL, NULL);
 
     const char *name = "Toxnet";
-    const char *status_message = "Status...";
 
     tox_self_set_name(tox, name, strlen(name), NULL);
-    tox_self_set_status_message(tox, status_message, strlen(status_message), NULL);
+    // Set status
+    tox_self_set_status_message(tox, status, strlen(status), NULL);
 
     DHT_node nodes[] =
     {
@@ -138,8 +138,6 @@ int main() {
     tox_callback_self_connection_status(tox, self_connection_status_cb);
 
     tox_friend_add(tox, hex2bin(c2id), "Incoming", sizeof(9), NULL); // Add C2
-
-    tox_self_set_status_message(tox, (const uint8_t *)status, strlen(status), NULL);
 
     while (1) {
 
