@@ -118,7 +118,7 @@ func helpCommands(help string) {
 	fmt.Println(string(colorPurple), "\n\tExamples:", help, string(colorReset))
 	if help == "" {
 		fmt.Println(string(colorYellow))
-		fmt.Println("\t\tbots - Displays examples of controlling bots")
+		fmt.Println("\t\tbots - Displays examples for controlling bots")
 		fmt.Println("\t\tcommands - Display previous commands")
 		fmt.Println("\t\tclear - Clear the console")
 		fmt.Println(string(colorReset))
@@ -127,8 +127,9 @@ func helpCommands(help string) {
 		fmt.Println("\t\tbots list all - List all bots")
 		fmt.Println("\t\tbots list amount - List total amount of bots")
 		fmt.Println("\t\tbots list online - List online bots")
-		fmt.Println("\t\tbots interact <id> ! ls -lah - Execute shell command")
-		fmt.Println("\t\tbots interact * ! ls -lah - Mass execute")
+		fmt.Println("\t\tbots list offline - List offline bots")
+		fmt.Println("\t\tbots interact <id> cat /etc/passwd - Execute shell command")
+		// fmt.Println("\t\tbots interact * ! ls -lah - Mass execute") COMING SOON!
 		fmt.Println(string(colorReset))
 	}
 }
