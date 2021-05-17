@@ -3,7 +3,7 @@
 C2 is written in Go and uses [go-toxcore-c](https://github.com/TokTok/go-toxcore-c).  
 Client is written in C and uses [c-toxcore](https://github.com/TokTok/c-toxcore).
 
-![ToxNet](https://imgur.com/WfhJV8k.png)
+![ToxNet](https://i.imgur.com/ySV3ynY.png)
 
 #### Description
 This project was created in two days and it was my first time learning Golang (Client is now written in C).  
