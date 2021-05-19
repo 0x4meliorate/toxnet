@@ -6,7 +6,7 @@ Client is written in C and uses [c-toxcore](https://github.com/TokTok/c-toxcore)
 ![ToxNet](https://i.imgur.com/ySV3ynY.png)
 
 #### Description
-This project is a proof-of-concept.
+This project is a proof-of-concept.   
 Thanks to [xbee](https://github.com/xbee) and the developers of [TokTok](https://github.com/TokTok) this project was very simple to create.  
 The Toxnet code has been commented and is pretty easy to understand.  
 The way Toxnet works is by having a server that auto accepts incoming clients friend requests.   
