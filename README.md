@@ -35,7 +35,3 @@ How to use
 * Coming Soon
 
 <img src="https://imgur.com/HFthlr9.png" alt="address" width="1000" height="auto">
-
-
-### TODO:
-* Fix update pings to let the C2 acknowledge who is online and who isn't. 
