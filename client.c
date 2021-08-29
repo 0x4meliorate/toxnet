@@ -9,7 +9,7 @@
 #include <sodium/utils.h>
 #include <tox/tox.h>
 
-// Set system information for C2
+// Set system information for C2 (test)
 #if __linux__
     char * status = "LINUX";
 #elif __unix__
