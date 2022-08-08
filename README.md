@@ -11,8 +11,8 @@ Thanks to [xbee](https://github.com/xbee) and the developers of [TokTok](https:/
 The Toxnet code has been commented and is pretty easy to understand.  
 The way Toxnet works is by having a server that auto accepts incoming clients friend requests.   
 Then uses the FriendGetConnectionStatus function to determine online status.   
-Messages are executed as shell commands and the output is sent back to the C2.   
-In order to get started just type help in the server console.  
+Messages are executed as shell commands, the output is sent back to the C2 and then relayed to the admin.
+In order to get started just add the C2 using the ToxID and send the message "help".
 You can find Tox bootstrap servers here: [nodes](https://nodes.tox.chat).  
 Just update the server interface in the client and server.  
 
