@@ -112,12 +112,7 @@ func main() {
 			if slices.Contains(admins, pub) {
 
 				if strings.ToLower(messages[0]) == "help" {
-					_, err := t.FriendSendMessage(friendNumber, `
-				[+] HELP
-				[?] LIST - List online bots.
-				[?] EXEC <BOT> <CMD> - Execute command on bot.
-				[?] MASS <CMD> - Mass execute command.
-				`)
+					_, err := t.FriendSendMessage(friendNumber, `[+] HELP\n[?] LIST - List online bots.\n[?] EXEC <BOT> <CMD> - Execute command on bot.\n[?] MASS <CMD> - Mass execute command.`)
 					if err != nil {
 						fmt.Println(err)
 					}
