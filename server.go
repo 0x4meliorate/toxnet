@@ -31,8 +31,8 @@ func showC2(toxid string, toxpub string) {
 
 	fmt.Println("")
 	fmt.Println("\t\t\t\t\t", string(colorBlack), strings.Repeat("#", 80), string(colorReset))
-	fmt.Println("\t\t\t\t\t", string(colorRed), "C2:", toxid, string(colorReset))
-	fmt.Println("\t\t\t\t\t", string(colorRed), "Pub:", toxpub, string(colorReset))
+	fmt.Println("\t\t\t\t\t", string(colorRed), "TOX-ID:", toxid, string(colorReset))
+	fmt.Println("\t\t\t\t\t", string(colorRed), "PUB-KEY:", toxpub, string(colorReset))
 	fmt.Println("\t\t\t\t\t", string(colorBlack), strings.Repeat("#", 80), string(colorReset))
 	fmt.Println("")
 }
