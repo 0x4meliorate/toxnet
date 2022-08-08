@@ -7,13 +7,9 @@ Client is written in C and uses [c-toxcore](https://github.com/TokTok/c-toxcore)
 
 #### Description
 Toxnet is a proof-of-concept [E2EE](https://en.wikipedia.org/wiki/End-to-end_encryption) [P2P](https://en.wikipedia.org/wiki/Peer-to-peer) [C2](https://en.wikipedia.org/wiki/Command_and_control).   
-Thanks to [xbee](https://github.com/xbee) and the developers of [TokTok](https://github.com/TokTok), this project was very simple to create.  
+Thanks to [xbee](https://github.com/xbee) and the developers of [TokTok](https://github.com/TokTok) this project was simple to create.  
 The Toxnet code has been commented and is very easy to understand.  
-This project works by setting up a C2 and having it act as a relay for admins and bots.  
-Use a Tox client such as [qTox](https://qtox.github.io/) and place your Tox ID into "server.go" in the "admins" array on line 15.  
-Upon starting the C2 (server.go), this will present a "TOX-ID", add this Tox ID using your Tox client.  
-Once the server has accepted the incoming friend request and establishes a connection, send "help" as a message to the server.  
-This will send instructions on how to use Toxnet.  
+This project works by setting up a C2 and having it act as a relay for incoming and outgoing messages.  
 
 You can find Tox bootstrap servers here: [nodes](https://nodes.tox.chat).  
 Just update the server interface in the client and server.  
@@ -26,11 +22,19 @@ How to use
 
 ### Debian
 
+#### Server
 * `sudo apt install libsodium-dev libtoxcore-dev golang -y`
 * `go get github.com/TokTok/go-toxcore-c`
+* Download [qTox](https://qtox.github.io/) and place your Tox ID (from qTox) into "server.go" in the "admins" array on line 15.
 * `go run server.go`
-* You will then see the "TOX-ID" and "PUB-KEY" under the Toxnet banner.
-* Edit client.c and put the "TOX-ID" and "PUB-KEY" in client.c.
+* Upon starting the C2, this will present a "TOX-ID", add this Tox ID using qTox.
+* Once the server has accepted the incoming friend request and establishes a connection, send "help" as a message to the server.
+* This will send instructions on how to use Toxnet.
+
+##### Client
+* Get the "TOX-ID" and "PUB-KEY" under the Toxnet banner on the server.
+* Edit client.c and change `c2id = "TOX-ID"` and `c2pub="PUB-KEY"`).
+* Then compile using the command below.
 * `gcc -o client client.c -I tox/include -I deps/file2str -lpthread -Bstatic /usr/lib/x86_64-linux-gnu/libtoxcore.a /usr/lib/x86_64-linux-gnu/libsodium.a -lrt -Bdynamic -lc -lm -lgcc -ldl -pthread`
 
 ### Windows
