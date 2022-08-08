@@ -3,7 +3,7 @@
 C2 is written in Go and uses [go-toxcore-c](https://github.com/TokTok/go-toxcore-c).  
 Client is written in C and uses [c-toxcore](https://github.com/TokTok/c-toxcore).
 
-![ToxNet](https://i.imgur.com/ySV3ynY.png)
+![ToxNet](https://i.imgur.com/hoYTrLx.png)
 
 #### Description
 Toxnet is a proof-of-concept [E2EE](https://en.wikipedia.org/wiki/End-to-end_encryption) [P2P](https://en.wikipedia.org/wiki/Peer-to-peer) [C2](https://en.wikipedia.org/wiki/Command_and_control).   
@@ -43,5 +43,3 @@ How to use
 
 ## Windows
 * Coming Soon
-
-
