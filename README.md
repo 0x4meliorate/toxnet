@@ -6,7 +6,7 @@ Client is written in C and uses [c-toxcore](https://github.com/TokTok/c-toxcore)
 ![ToxNet](https://i.imgur.com/ySV3ynY.png)
 
 #### Description
-Toxnet is a proof-of-concept [e2ee](https://en.wikipedia.org/wiki/End-to-end_encryption) [P2P](https://en.wikipedia.org/wiki/Peer-to-peer) [C2](https://en.wikipedia.org/wiki/Command_and_control).   
+Toxnet is a proof-of-concept [E2EE](https://en.wikipedia.org/wiki/End-to-end_encryption) [P2P](https://en.wikipedia.org/wiki/Peer-to-peer) [C2](https://en.wikipedia.org/wiki/Command_and_control).   
 Thanks to [xbee](https://github.com/xbee) and the developers of [TokTok](https://github.com/TokTok), this project was very simple to create.  
 The Toxnet code has been commented and is very easy to understand.  
 This project works by setting up a C2 and having it act as a relay for admins and bots.  
