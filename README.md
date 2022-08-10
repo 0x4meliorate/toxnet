@@ -34,10 +34,9 @@ How to use
 * This will send instructions on how to use Toxnet. [Example](https://i.imgur.com/EgDxnDi.png)
 ##### Client
 * Get the "TOX-ID" and "PUB-KEY" under the Toxnet banner on the server.
-* Edit client.c and change `c2id = "TOX-ID"` and `c2pub="PUB-KEY"`). [Example](https://i.imgur.com/N4mq8Jf.png)
+* Edit client.c and change `c2id = "TOX-ID"` and `c2pub="PUB-KEY"`). [Example](https://i.imgur.com/3IG44mm.png)
 * Then compile using the command below.
 * `gcc -o client client.c -I tox/include -I deps/file2str -lpthread -Bstatic /usr/lib/x86_64-linux-gnu/libtoxcore.a /usr/lib/x86_64-linux-gnu/libsodium.a -lrt -Bdynamic -lc -lm -lgcc -ldl -pthread`
-<img src="https://i.imgur.com/3IG44mm.png" alt="address" width="750" height="auto">
 
 
 #### Windows
