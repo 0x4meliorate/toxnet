@@ -18,15 +18,15 @@ func AdminHelp(senderNum uint32) {
 
 func AdminList(senderNum uint32) {
 	friends := Tox_instance.SelfGetFriendList()
-	senderKey, err := Tox_instance.FriendGetPublicKey(senderNum)
-	if err != nil {
-		fmt.Println("[-] Error: Failed to get public key -", err)
-	}
+	//senderKey, err := Tox_instance.FriendGetPublicKey(senderNum)
+	//if err != nil {
+		//fmt.Println("[-] Error: Failed to get public key -", err)
+	//}
 
 	for _, friend := range friends {
-		if slices.Contains(Admins, senderKey) {
-			continue
-		}
+		//if slices.Contains(Admins, senderKey) {
+			//continue
+		//}
 		status, err := Tox_instance.FriendGetConnectionStatus(friend)
 		if err != nil {
 			fmt.Println(err)
