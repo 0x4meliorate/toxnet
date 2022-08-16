@@ -22,7 +22,7 @@ Installation is straight forward on Debian-based Linux distributions:
 * `sudo apt install libsodium-dev libtoxcore-dev golang -y`
 * `go get github.com/TokTok/go-toxcore-c`
 * Download [qTox](https://qtox.github.io/)
-* Place your Tox-ID (from qTox) into `net/config.go` in the "Admins" array on line 4. [View](https://github.com/0x4meliorate/toxnet/blob/132b719d250f8a9a0448c09e4f0d882ff047db83/net/config.go#L4)
+* Get your Tox-ID (from qTox), strip NoSpam/Checksum(blue/grey on end of address) off it and place it into `net/config.go` in the "Admins" array on line 4. [View](https://github.com/0x4meliorate/toxnet/blob/132b719d250f8a9a0448c09e4f0d882ff047db83/net/config.go#L4)
 * Run `go run main.go`
 * Upon starting the C2, this will present a "TOX-ID", add this Tox-ID using qTox.
 * Once the server has accepted the incoming friend request and establishes a connection, send "help" as a message to the server.
