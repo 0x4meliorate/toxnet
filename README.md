@@ -3,6 +3,7 @@
   <img src="https://i.imgur.com/sMbpdVJ.gif" width="650" height="auto">
 </p>
 
+__Warning: Only use this software according to your current legislation. Misuse of this software can raise legal and ethical issues which I don't support nor can be held responsible for.__
 
 #### Description
 Toxnet is a proof-of-concept [E2EE](https://en.wikipedia.org/wiki/End-to-end_encryption) [P2P](https://en.wikipedia.org/wiki/Peer-to-peer) [C2](https://en.wikipedia.org/wiki/Command_and_control).   
@@ -10,8 +11,6 @@ Thanks to [xbee](https://github.com/xbee) and the developers of [TokTok](https:/
 The Toxnet code has been commented and is very easy to understand.  
 This project works by setting up a C2 and having it act as a relay for incoming and outgoing messages.  
 A better explanation and more features are yet to come! It's getting late, I'll do this tomorrow. 😅
-
-__Warning: Only use this software according to your current legislation. Misuse of this software can raise legal and ethical issues which I don't support nor can be held responsible for.__
 
 C2 is written in Go and uses [go-toxcore-c](https://github.com/TokTok/go-toxcore-c).  
 Client is written in C and uses [c-toxcore](https://github.com/TokTok/c-toxcore).
