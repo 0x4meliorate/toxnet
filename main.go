@@ -50,6 +50,10 @@ func main() {
 					net.AdminExec(senderKey, messages)
 				} else if strings.ToLower(messages[0]) == "mass" {
 					net.AdminMass(senderNum, senderKey, messages)
+				} else if strings.ToLower(messages[0]) == "masslinux" {
+					net.AdminMassLinux(senderNum, senderKey, messages)
+				} else if strings.ToLower(messages[0]) == "masswin" {
+					net.AdminMassWin(senderNum, senderKey, messages)
 				}
 			} else {
 				net.BotResponse(messages)

