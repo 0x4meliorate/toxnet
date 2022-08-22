@@ -72,20 +72,6 @@ void friend_message_cb(Tox *tox, uint32_t friend_num, TOX_MESSAGE_TYPE type, con
     }
 }
 
-void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data) {
-    switch (connection_status) {
-        case TOX_CONNECTION_NONE:
-            printf("Offline\n");
-            break;
-        case TOX_CONNECTION_TCP:
-            printf("Online, using TCP\n");
-            break;
-        case TOX_CONNECTION_UDP:
-            printf("Online, using UDP\n");
-            break;
-    }
-}
-
 int main() {
     Tox *tox = tox_new(NULL, NULL);
 
@@ -113,7 +99,6 @@ TOXNET_REPLACE_ME_BOOTSTRAPS
     }
 
     tox_callback_friend_message(tox, friend_message_cb);
-    tox_callback_self_connection_status(tox, self_connection_status_cb);
     tox_friend_add(tox, hex2bin(c2id), "Incoming", sizeof(9), NULL); // Add C2
 
     while (1) {
