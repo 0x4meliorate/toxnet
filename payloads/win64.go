@@ -1,6 +1,6 @@
 package payloads
 
-var Linux_stub = `#include <ctype.h>
+var Win64_stub = `#include <ctype.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>

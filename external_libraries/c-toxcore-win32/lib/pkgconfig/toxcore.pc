@@ -1,0 +1,11 @@
+prefix=/prefix/i686
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: toxcore
+Description: Tox protocol library
+Requires.private: libsodium opus vpx
+Version: 0.2.18
+Libs: -L${libdir} -ltoxcore
+Libs.private: -lrt -lws2_32 -liphlpapi
+Cflags: -I${includedir}
