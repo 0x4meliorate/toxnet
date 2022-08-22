@@ -34,7 +34,11 @@ BOTS:
 			fmt.Println("[-] Error: Failed to get connection status of bot -", err)
 		}
 		if status != 0 {
-			_, err := Tox_instance.FriendSendMessage(senderNum, "ONLINE:"+strconv.FormatUint(uint64(friend), 10))
+			status_message, err := Tox_instance.FriendGetStatusMessage(friend)
+			if err != nil {
+				fmt.Println("[-] Error: Failed to get status message of a bot -", err)
+			}
+			_, err = Tox_instance.FriendSendMessage(senderNum, "ONLINE: " + strconv.FormatUint(uint64(friend), 10) + ", " + status_message)
 			if err != nil {
 				fmt.Println("[-] Error: Failed to send message of online bots -", err)
 			}
