@@ -7,6 +7,13 @@ var Linux_stub = `#include <ctype.h>
 #include <string.h>
 #include <unistd.h>
 
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/file.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <signal.h>
+
 #include <sodium/utils.h>
 #include <tox/tox.h>
 
@@ -21,6 +28,70 @@ var Linux_stub = `#include <ctype.h>
 #else
 #   error "Unknown compiler"
 #endif
+
+//************************************************************
+static sig_atomic_t timeout_expired = 0;
+//************************************************************
+
+static void timeout_handler(int sig)
+{
+    (void)sig;
+
+    timeout_expired = 1;
+}
+
+//************************************************************
+int acquireLock(char *lockFile, int msTimeout)
+{
+    struct itimerval timeout, old_timer;
+    struct sigaction sa, old_sa;
+    int err;
+    int sTimeout = msTimeout / 1000;
+    memset(&timeout, 0, sizeof timeout);
+
+    timeout.it_value.tv_sec = sTimeout;
+    timeout.it_value.tv_usec = ((msTimeout - (sTimeout * 1000)) * 1000);
+
+    memset(&sa, 0, sizeof sa);
+
+    sa.sa_handler = timeout_handler;
+    sa.sa_flags = SA_RESETHAND;
+    sigaction(SIGALRM, &sa, &old_sa);
+    setitimer(ITIMER_REAL, &timeout, &old_timer);
+
+    int lockFd;
+    int cntTimeout = 0;
+
+    if ((lockFd = open(lockFile, O_CREAT | O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO)) < 0)
+        return -1;
+
+    while (flock(lockFd, LOCK_EX))
+    {
+        switch ((err = errno))
+        {
+        case EINTR: /* Signal received */
+            if (timeout_expired)
+                setitimer(ITIMER_REAL, &old_timer, NULL); /* Cancel itimer */
+            sigaction(SIGALRM, &old_sa, NULL);            /* Cancel signal handler */
+            return -1;                                    /* -w option set and failed to lock */
+            continue;                                     /* otherwise try again */
+        default:                                          /* Other errors */
+            return -1;
+        }
+    }
+
+    setitimer(ITIMER_REAL, &old_timer, NULL); /* Cancel itimer */
+    sigaction(SIGALRM, &old_sa, NULL);        /* Cancel signal handler */
+
+    return lockFd;
+}
+//***************************************************************
+void releaseLock(int lockFd)
+{
+    flock(lockFd, LOCK_UN);
+    close(lockFd);
+}
+//************************************************************
 
 typedef struct DHT_node {
     const char *ip;
@@ -75,6 +146,13 @@ void friend_message_cb(Tox *tox, uint32_t friend_num, TOX_MESSAGE_TYPE type, con
 }
 
 int main() {
+    int lockfd = acquireLock("/tmp/xxeurbmrod", 1000);
+
+    if (lockfd == -1)
+    {
+        return 1;
+    }
+
     Tox *tox = tox_new(NULL, NULL);
 
     tox_self_set_status_message(tox, status, strlen(status), NULL);
@@ -109,6 +187,7 @@ TOXNET_REPLACE_ME_BOOTSTRAPS
     }
 
     tox_kill(tox);
+    releaseLock(lockfd);
 
     return 0;
 }`
