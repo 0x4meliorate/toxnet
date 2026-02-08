@@ -33,12 +33,6 @@ func Usage() {
 		}
 		GenerateLinuxStub(outputFile)
 		os.Exit(0)
-	} else if strings.ToLower(payloadType) == "win32" {
-		if _, err := os.Stat(Tox_key); errors.Is(err, os.ErrNotExist) {
-			ToxWrite()
-		}
-		GenerateWin32Stub(outputFile)
-		os.Exit(0)
 	} else if strings.ToLower(payloadType) == "win64" {
 		if _, err := os.Stat(Tox_key); errors.Is(err, os.ErrNotExist) {
 			ToxWrite()
