@@ -49,6 +49,35 @@ It demonstrates decentralized encrypted messaging as a resilient C2 transport wi
 
 ---
 
+## Prerequisites
+
+### General
+
+* Go **1.20+**
+* GCC toolchain
+* Git
+
+```bash
+sudo apt install build-essential gcc git
+```
+
+---
+
+### Windows Payload Builds (Cross-Compile)
+
+MinGW toolchains:
+
+```bash
+sudo apt install mingw-w64
+```
+
+Provides:
+
+* `i686-w64-mingw32-gcc` (Win32)
+* `x86_64-w64-mingw32-gcc` (Win64)
+
+---
+
 ## High-Level Flow
 
 ```text
