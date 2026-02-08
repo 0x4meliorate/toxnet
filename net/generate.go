@@ -142,7 +142,7 @@ func GenerateWin64Stub(outputFile string) {
 		fmt.Println(err)
 	}
 
-	stdout, stderr, err := Shellout("x86_64-w64-mingw32-gcc -s -static -static-libgcc -static-libstdc++ -Iexternal_libraries/libsodium-win64/include/ -Iexternal_libraries/c-toxcore-win64/include/ external_libraries/c-toxcore-win64/bin/libtox.dll external_libraries/libsodium-win64/bin/libsodium-23.dll -o " + outputFile + " temp_win64_stub.c -lm -lgcc -lpthread -pthread")
+	stdout, stderr, err := Shellout("x86_64-w64-mingw32-gcc -s -static -static-libgcc -static-libstdc++ -Iexternal_libraries/libsodium-win64/include/ -Iexternal_libraries/c-toxcore-win64/include/ external_libraries/c-toxcore-win64/bin/libtox.dll external_libraries/libsodium-win64/bin/libsodium-26.dll -o " + outputFile + " temp_win64_stub.c -lm -lgcc -lpthread -pthread")
 	if err != nil {
 		fmt.Println("[-] Error: Failed compiling Win64 stub -", err)
 	}
@@ -161,7 +161,7 @@ func GenerateWin64Stub(outputFile string) {
 	fmt.Println("[!] 	external_libraries/c-toxcore-win64/bin/")
 	fmt.Println("[!] 		libtox.dll")
 	fmt.Println("[!] 	external_libraries/libsodium-win64/bin/")
-	fmt.Println("[!] 		libsodium-23.dll")
+	fmt.Println("[!] 		libsodium-26.dll")
 	fmt.Println("[!] 	/usr/x86_64-w64-mingw32/bin/")
 	fmt.Println("[!] 		libgcc_s_seh-1.dll")
 	fmt.Println("[!] 		libssp-0.dll")
