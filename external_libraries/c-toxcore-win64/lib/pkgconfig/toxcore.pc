@@ -1,0 +1,11 @@
+prefix=C:/Program Files (x86)/toxcore
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: toxcore
+Description: Tox protocol library
+Requires.private: libsodium
+Version: 0.2.22
+Libs: -L${libdir} -ltoxcore
+Libs.private: 
+Cflags: -I${includedir}
