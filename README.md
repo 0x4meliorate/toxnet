@@ -1,17 +1,19 @@
 # Toxnet
 
-Toxnet is a proof-of-concept end-to-end encrypted (E2EE), peer-to-peer (P2P) command-and-control (C2) framework built on the [Tox](https://tox.chat) protocol. It demonstrates decentralized encrypted messaging as a resilient C2 transport with no centralized infrastructure, paired with a from-scratch reimplementation of the parts of the protocol it actually needs.
+Toxnet is a proof-of-concept end-to-end encrypted (E2EE), peer-to-peer (P2P) command-and-control (C2) framework built on the [Tox](https://tox.chat) protocol. It demonstrates decentralised encrypted messaging as a resilient C2 transport with no centralised infrastructure, paired with a from-scratch reimplementation of the parts of the protocol it actually needs.
 
-<img width="2172" height="724" alt="image" src="https://github.com/user-attachments/assets/baedde78-cf2a-4eba-86cc-b04ac112f02f" />
+<img width="1280" height="640" alt="TOXNET" src="https://github.com/user-attachments/assets/507552c3-0020-4c25-aa40-f6bd13106771" />
+
+---
 
 It's two projects in one:
 
 1. 🧩 **The Tox implementation.** [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table), [onion routing](https://en.wikipedia.org/wiki/Onion_routing), [`net_crypto`](https://github.com/TokTok/c-toxcore/blob/master/toxcore/net_crypto.c), and file transfer, in pure Go and shared by the C2 node and the Linux payload, plus an independent x86-64 assembly rewrite for the Windows payload (`.exe` and flat `.bin` for loaders). Neither side links or wraps [`c-toxcore`](https://github.com/TokTok/c-toxcore).
 
-2. 🖥️ **The C2 node.** A local web dashboard for managing contacts, holding conversations, browsing and pulling files, and tasking remote payloads. Each consenting, owner-authorized machine runs a small payload that connects back to the C2 node as a Tox friend and executes the commands you send.
+2. 🖥️ **The C2 node.** A local web dashboard for managing contacts, holding conversations, browsing and pulling files, and tasking remote payloads. Each consenting, owner-authorised machine runs a small payload that connects back to the C2 node as a Tox friend and executes the commands you send.
 
 > [!WARNING]
-> The C2 payloads are tools for machines **you own or are authorized to manage**. Each accepts commands from a single owner [Tox ID](https://en.wikipedia.org/wiki/Tox_(protocol)) (set at build time or stamped in at download). Protect that identity's secret key accordingly, and don't run payloads on systems you don't control.
+> The C2 payloads are tools for machines **you own or are authorised to manage**. Each accepts commands from a single owner [Tox ID](https://en.wikipedia.org/wiki/Tox_(protocol)) (set at build time or stamped in at download). Protect that identity's secret key accordingly, and don't run payloads on systems you don't control.
 
 <img width="1445" height="1070" alt="{B2D564B2-5510-4EA3-B401-72373437FEC0}" src="https://github.com/user-attachments/assets/fd32d18e-e9d2-4c03-a159-d40d2b783cdd" />
 
@@ -121,7 +123,7 @@ Then open **http://127.0.0.1:8081**. On first run it creates a `toxnet-data/` fo
 ## ⚖️ Responsible use
 
 Toxnet is built for **remote administration of your own computers** and for learning how Tox works. The C2 payloads run arbitrary commands, so:
-- Only deploy a payload to machines you **own or are explicitly authorized to manage**.
+- Only deploy a payload to machines you **own or are explicitly authorised to manage**.
 - The owner Tox ID is the only credential. Protect its save file accordingly.
 - Don't use it to access systems without permission.
 
