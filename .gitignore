@@ -1,0 +1,37 @@
+# Upstream c-toxcore clone (reference only, not part of this project)
+/c-toxcore/
+
+# Build artifacts
+*.exe
+*.obj
+*.bin
+
+# Persistent identity / friend-list save files (contain secret keys)
+*.save
+*.save.tmp
+
+# VSCode
+/.vscode/
+
+# Windows tests
+/windows/tests/
+
+# Compiled Linux remote binary (the Windows remote.exe is covered by *.exe)
+/linux/toxnet-linux
+
+# Embedded remote-shell assets (built by build.bat; .exe/.bin covered above)
+/web/assets/toxnet-linux
+
+# Compiled Toxnet web UI (the .exe is covered above; this is the Linux ELF)
+/Toxnet
+
+# Files received by the web UI
+/web/downloads/
+
+# Toxnet data folder created next to the binary at runtime (save, db, downloads)
+/toxnet-data/
+
+# SQLite activity log
+*.db
+*.db-wal
+*.db-shm
