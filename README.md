@@ -4,6 +4,13 @@ Toxnet is a proof-of-concept end-to-end encrypted (E2EE), peer-to-peer (P2P) com
 
 <img width="1280" height="640" alt="TOXNET" src="https://github.com/user-attachments/assets/507552c3-0020-4c25-aa40-f6bd13106771" />
 
+![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go&logoColor=white)
+![x86-64 ASM](https://img.shields.io/badge/x86--64-ASM-654FF0?logo=assemblyscript&logoColor=white)
+![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/Status-Research%20PoC-orange)
+![Encryption](https://img.shields.io/badge/E2EE-Tox%20Protocol-purple)
+
 ---
 
 It's two projects in one:
@@ -14,6 +21,12 @@ It's two projects in one:
 
 > [!WARNING]
 > The C2 payloads are tools for machines **you own or are authorised to manage**. Each accepts commands from a single owner [Tox ID](https://en.wikipedia.org/wiki/Tox_(protocol)) (set at build time or stamped in at download). Protect that identity's secret key accordingly, and don't run payloads on systems you don't control.
+> * This software is provided strictly for educational and research purposes.
+> * Use only in accordance with your local laws and regulations.  
+> * Misuse may lead to legal or ethical violations.  
+> * The author does not support malicious use and accepts no responsibility for abuse of this software.
+
+## Dashboard
 
 <img width="1445" height="1070" alt="{B2D564B2-5510-4EA3-B401-72373437FEC0}" src="https://github.com/user-attachments/assets/fd32d18e-e9d2-4c03-a159-d40d2b783cdd" />
 
@@ -117,15 +130,6 @@ Then open **http://127.0.0.1:8081**. On first run it creates a `toxnet-data/` fo
 <img width="1393" height="957" alt="{C1CB8006-F8DC-49E7-BAA8-D5B5D4E74FE4}" src="https://github.com/user-attachments/assets/d0e56b82-7b4f-4527-9eca-27158484551f" />
 <img width="1397" height="954" alt="{F9EEB5AF-AE90-4188-B39F-872E3FE31905}" src="https://github.com/user-attachments/assets/1d8f3263-38b0-4bb5-88b0-29c3e4859ef0" />
 <img width="1901" height="1300" alt="{4A334615-76C6-45B7-A722-B3F2BC103903}" src="https://github.com/user-attachments/assets/bb6b4dac-f635-4b52-8ad1-0d93c446c05b" />
-
----
-
-## ⚖️ Responsible use
-
-Toxnet is built for **remote administration of your own computers** and for learning how Tox works. The C2 payloads run arbitrary commands, so:
-- Only deploy a payload to machines you **own or are explicitly authorised to manage**.
-- The owner Tox ID is the only credential. Protect its save file accordingly.
-- Don't use it to access systems without permission.
 
 ---
 
