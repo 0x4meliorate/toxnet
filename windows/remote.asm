@@ -1,4 +1,4 @@
-; remote.asm: a tiny SSH-like remote shell for your OWN PC, over Tox.
+; remote.asm: a tiny remote shell for your OWN PC, over Tox.
 ;
 ; Adds FRIEND_ID (config.inc) as the only friend. Because a Tox friend
 ; connection is end-to-end encrypted and bound to that public key, every
@@ -7,7 +7,7 @@
 ; is sent back to the owner. Runs until the process is closed.
 ;
 ; The owner key is the one credential: anyone holding its secret key gets a
-; shell here, exactly like an SSH private key. There is no stealth, persistence
+; shell here, exactly like any private key. There is no stealth, persistence
 ; or evasion - it is a visible program you run on a machine you administer.
 
 default rel

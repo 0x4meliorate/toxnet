@@ -1,5 +1,4 @@
-// Command remote is an SSH-like remote shell for your own machine, over Tox,
-// built on the pure-Go tox library. It is the Linux counterpart of the
+// Built on the pure-Go tox library. It is the Linux counterpart of the
 // assembly remote.exe (Windows); the same program also runs on Windows/macOS.
 //
 // It accepts commands only from one owner Tox ID (ownerID below), which the web
@@ -7,7 +6,7 @@
 // Tox ID as the first argument. Each message from the owner is run with the
 // system shell and its combined output is sent back.
 //
-// The owner key is the one credential, like an SSH private key. There is no
+// The owner key is the one credential, like any private key. There is no
 // stealth or persistence - it is a visible program you run on a machine you
 // administer.
 package main
